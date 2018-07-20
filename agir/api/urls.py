@@ -37,6 +37,7 @@ if settings.ENABLE_API:
 
 if settings.ENABLE_FRONT:
     urlpatterns.append(path('', include(front_urls)))
+    urlpatterns.append(path('nuntius/', include('nuntius.urls')))
 
 if settings.ENABLE_MAP:
     urlpatterns.append(

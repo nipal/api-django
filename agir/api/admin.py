@@ -6,7 +6,8 @@ from django.contrib.sites.admin import SiteAdmin
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 import django_otp
-
+import nuntius
+from nuntius.admin import CampaignAdmin
 
 class PersonAuthenticationForm(django_otp.admin.OTPAdminAuthenticationForm):
     username = forms.EmailField(
@@ -76,3 +77,4 @@ admin_site.register(auth_admin.Group, auth_admin.GroupAdmin)
 admin_site.register(Redirect, RedirectAdmin)
 admin_site.register(Site, SiteAdmin)
 admin_site.register(django_otp.plugins.otp_totp.models.TOTPDevice, DeviceAdmin)
+admin_site.register(nuntius.models.Campaign, CampaignAdmin)

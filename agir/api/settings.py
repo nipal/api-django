@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     'agir.donations',
     'agir.system_pay',
     'agir.checks',
+    'nuntius',
 ]
 
 MIDDLEWARE = [
@@ -506,3 +507,7 @@ PAYMENT_MODES = [
     'agir.system_pay.SystemPayPaymentMode',
     'agir.checks.CheckPaymentMode',
 ]
+
+NUNTIUS_SUBSCRIBER_MODEL = 'people.Person'
+NUNTIUS_CELERY_BROKER_URL = 'redis://'
+NUNTIUS_SEGMENT_MODELS = []

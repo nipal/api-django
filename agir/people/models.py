@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 import warnings
 from collections import OrderedDict
 from django.db import models, transaction
@@ -10,11 +12,11 @@ from django.conf import settings
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from django.core.serializers.json import DjangoJSONEncoder
+from nuntius.models import BaseSubscriber
 
 from model_utils.models import TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.phonenumber import PhoneNumber
-
 
 from agir.lib.models import BaseAPIResource, LocationMixin, AbstractLabel, NationBuilderResource, DescriptionField
 from agir.authentication.models import Role
@@ -255,6 +257,26 @@ class Person(BaseAPIResource, NationBuilderResource, LocationMixin):
         order.insert(0, email_instance.id)
         self.set_personemail_order(order)
         self.primary_email = email_instance
+
+    # nuntius methods
+    def get_subscriber_status(self):
+        if self.bounced:
+            return BaseSubscriber.STATUS_BOUNCED
+        if self.subscribed:
+            return BaseSubscriber.STATUS_SUBSCRIBED
+        return BaseSubscriber.STATUS_UNSUBSCRIBED
+
+    def get_subscriber_email(self):
+        return self.email
+
+    def get_suscriber_data(self):
+        data = {}
+        data['FIRST_NAME'] = self.first_name
+        data['LAST_NAME'] = self.last_name
+        from agir.lib.utils import generate_token_params
+        data['MERGE_LOGIN_QUERY'] = urlencode(generate_token_params(self))
+
+        return data
 
 
 class PersonTag(AbstractLabel):
