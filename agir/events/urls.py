@@ -10,6 +10,7 @@ urlpatterns = [
     path('evenements/liste/', views.EventListView.as_view(), name='list_all_events'),
     path('evenements/<uuid:pk>/', views.EventDetailView.as_view(), name='view_event'),
     path('evenements/<uuid:pk>/manage/', views.ManageEventView.as_view(), name='manage_event'),
+    path('evenements/<uuid:pk>/manage/tickets', views.TicketingView.as_view(), name='ticket_event'),
     path('evenements/<uuid:pk>/modifier/', views.ModifyEventView.as_view(), name='edit_event'),
     path('evenements/<uuid:pk>/quitter/', views.QuitEventView.as_view(), name='quit_event'),
     path('evenements/<uuid:pk>/annuler/', views.CancelEventView.as_view(), name='cancel_event'),

@@ -61,6 +61,9 @@ class Payment(TimeStampedModel, LocationMixin):
     def get_price_display(self):
         return "{} €".format(floatformat(self.price / 100, 2))
 
+    def get_mode_class(self):
+        return PAYMENT_MODES[self.mode]
+
     def get_mode_display(self):
         return PAYMENT_MODES[self.mode].label if self.mode in PAYMENT_MODES else self.mode
 

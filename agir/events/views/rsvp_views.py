@@ -179,13 +179,14 @@ class RSVPEventView(HardLoginRequiredMixin, DetailView):
 
         return HttpResponseRedirect(reverse('view_event', args=[self.event.pk]))
 
-    def redirect_to_billing_form(self, submission=None, is_guest=False):
+    def redirect_to_billing_form(self, submission=None, is_guest=False, is_manager_ticket=False):
         if submission:
             self.request.session['rsvp_submission'] = submission.pk
         elif 'rsvp_submission' in self.request.session:
             del self.request.session['rsvp_submission']
         self.request.session['rsvp_event'] = str(self.event.pk)
         self.request.session['is_guest'] = is_guest
+        self.request.session['is_manager_ticket'] = is_manager_ticket
 
         return HttpResponseRedirect(reverse('pay_event'))
 
@@ -267,6 +268,7 @@ class PayEventView(HardLoginRequiredMixin, UpdateView):
             self.submission = None
 
         self.is_guest = self.request.session.get('is_guest', False)
+        self.is_manager_ticket = self.request.session.get('is_manager_ticket', False)
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -275,6 +277,7 @@ class PayEventView(HardLoginRequiredMixin, UpdateView):
         kwargs['submission'] = self.submission
         kwargs['event'] = self.event
         kwargs['is_guest'] = self.is_guest
+        kwargs['is_manager_ticket'] = self.is_manager_ticket
         return kwargs
 
     def form_valid(self, form):
@@ -282,6 +285,7 @@ class PayEventView(HardLoginRequiredMixin, UpdateView):
         person = self.request.user.person
         submission = form.cleaned_data['submission']
         is_guest = form.cleaned_data['is_guest']
+        is_manager_ticket = form.cleaned_data['is_manager_ticket']
         payment_mode = form.cleaned_data['payment_mode']
 
         if not is_guest:
@@ -292,6 +296,15 @@ class PayEventView(HardLoginRequiredMixin, UpdateView):
             try:
                 if is_guest:
                     payment = add_paid_identified_guest_and_get_payment(event, person, payment_mode, submission)
+                    if is_manager_ticket and self.request.session['is_manager_ticket']:
+                        if payment.get_mode_class().can_admin:
+                            messages.add_message(
+                                request=self.request,
+                                message="La personne a bien été inscrite !",
+                            )
+
+                            return HttpResponseRedirect(reverse('ticket_event'), args=[self.event.pk])
+
                 else:
                     payment = rsvp_to_paid_event_and_create_payment(event, person, payment_mode, submission)
 
@@ -389,3 +402,40 @@ def notification_listener(payment):
 
                 rsvp.save()
             send_rsvp_notification.delay(rsvp.pk)
+
+
+class TicketingView(RSVPEventView):
+    template_name = 'events/ticketing.html'
+    permissions_required = ('events.change_event',)
+    error_messages = {
+        'denied': _("Vous ne pouvez pas accéder à cette page sans être organisateur de l'événement.")
+    }
+
+    def redirect_to_ticketing(self, *, message, level=messages.ERROR):
+        if message is not None:
+            messages.add_message(
+                request=self.request,
+                level=level,
+                message=message
+            )
+
+        return HttpResponseRedirect(reverse('ticket_event', args=[self.event.pk]))
+
+    def post(self):
+        self.event = self.get_object()
+        try:
+            form = self.get_form()
+
+            if not form.is_valid():
+                context = self.get_context_data(object=self.event)
+                return self.render_to_response(context)
+
+            if not form.cleaned_data['is_guest']:
+                return self.redirect_to_ticketing(message=self.default_error_message)
+
+            form.save_submission(self.request.user.person)
+
+            return self.redirect_to_billing_form(form.submission)
+
+        except RSVPException as e:
+            return self.redirect_to_ticketing(message=str(e))

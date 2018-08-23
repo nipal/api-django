@@ -372,13 +372,15 @@ class BillingForm(forms.ModelForm):
     submission = forms.ModelChoiceField(PersonFormSubmission.objects.all(), widget=forms.HiddenInput, required=False)
     payment_mode = PaymentModeField(required=True)
     is_guest = forms.BooleanField(required=False, widget=forms.HiddenInput)
+    is_manager_ticket = forms.BooleanField(required=False, widget=forms.HiddenInput)
 
-    def __init__(self, *args, event, submission, is_guest, **kwargs):
+    def __init__(self, *args, event, submission, is_guest, is_manager_ticket, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields['submission'].initial = submission
         self.fields['event'].initial = event
         self.fields['is_guest'].initial = is_guest
+        self.fields['is_manager_ticket'].initial = is_manager_ticket
 
         for f in ['first_name', 'last_name', 'location_address1', 'location_zip', 'location_city', 'location_country',
                   'contact_phone']:
