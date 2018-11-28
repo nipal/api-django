@@ -1,17 +1,16 @@
 from django import forms
 from django.contrib import admin
-from django.db.models.functions import Coalesce
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis.admin import OSMGeoAdmin
-from django.db.models import F, Sum, Count, Q, Case, When, CharField
+from django.db.models import Q
 from django.urls import path
 from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.html import format_html, escape
 
-from agir.events.models import RSVP, Event
+from agir.events.models import Event
 from agir.people.admin import PersonFormAdminMixin
 from agir.people.models import PersonFormSubmission
 from ...api.admin import admin_site

@@ -4,9 +4,10 @@ from django.utils.html import escape
 from django.shortcuts import reverse
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect, Http404
-from django.contrib.admin.options import IS_POPUP_VAR
 from django.template.response import TemplateResponse
+from django_filters.views import FilterView
 
+from agir.carte.views import EventFilterSet
 from .forms import AddOrganizerForm
 
 
@@ -73,3 +74,25 @@ def add_member(model_admin, request, pk):
     request.current_app = model_admin.admin_site.name
 
     return TemplateResponse(request, "admin/events/add_organizer.html", context)
+
+
+class EventSummaryView(FilterView):
+    filterset_class = EventFilterSet
+    template_name = "admin/events/event_summary.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return super().get_context_data(
+            title="Extraction",
+            opts=None,
+            add=False,
+            change=False,
+            is_popup=False,
+            save_as=False,
+            has_add_permission=False,
+            has_change_permission=False,
+            has_view_permission=False,
+            has_editable_inline_admin_formsets=False,
+            has_delete_permission=False,
+            show_close=False,
+            **kwargs
+        )
