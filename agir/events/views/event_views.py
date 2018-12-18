@@ -1,25 +1,16 @@
-import json
-
 import ics
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy, reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.views.generic import (
-    CreateView,
-    UpdateView,
-    TemplateView,
-    DeleteView,
-    DetailView,
-)
-from django.views.generic.edit import ProcessFormView, FormMixin
+from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 from django.contrib import messages
-from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.conf import settings
 from django.utils import timezone
-from django.utils.html import format_html, mark_safe
+from django.utils.html import format_html
 from django.utils.translation import ugettext as _
 
-from ..models import Event, RSVP, Calendar, EventSubtype
+from ..models import Event, RSVP, Calendar
 from ..tasks import send_cancellation_notification
 
 from ..forms import (
@@ -43,7 +34,6 @@ from agir.authentication.view_mixins import (
 )
 
 __all__ = [
-    "CreateEventView",
     "ManageEventView",
     "ModifyEventView",
     "QuitEventView",
@@ -56,7 +46,6 @@ __all__ = [
     "EditEventReportView",
     "UploadEventImageView",
     "EventListView",
-    "PerformCreateEventView",
 ]
 
 
@@ -147,79 +136,6 @@ class ManageEventView(HardLoginRequiredMixin, PermissionsRequiredMixin, DetailVi
             return HttpResponseRedirect(self.get_success_url())
 
         return self.render_to_response(self.get_context_data(add_organizer_form=form))
-
-
-class CreateEventView(SoftLoginRequiredMixin, TemplateView):
-    template_name = "events/create.html"
-
-    def get_context_data(self, **kwargs):
-        person = self.request.user.person
-
-        groups = [
-            {"id": str(m.supportgroup.pk), "name": m.supportgroup.name}
-            for m in person.memberships.filter(
-                supportgroup__published=True, is_manager=True
-            )
-        ]
-
-        initial = {"email": person.email}
-
-        if person.contact_phone:
-            initial["phone"] = person.contact_phone.as_e164
-
-        if person.first_name and person.last_name:
-            initial["name"] = "{} {}".format(person.first_name, person.last_name)
-
-        initial_group = self.request.GET.get("group")
-        if initial_group in [g["id"] for g in groups]:
-            initial["organizerGroup"] = initial_group
-
-        subtype_label = self.request.GET.get("subtype")
-        if subtype_label:
-            try:
-                subtype = EventSubtype.objects.get(label=subtype_label)
-                initial["subtype"] = subtype.label
-            except EventSubtype.DoesNotExist:
-                pass
-
-        return super().get_context_data(
-            props=mark_safe(json.dumps({"initial": initial, "groups": groups})),
-            **kwargs
-        )
-
-
-class PerformCreateEventView(SoftLoginRequiredMixin, FormMixin, ProcessFormView):
-    model = Event
-    form_class = EventForm
-
-    def get_form_kwargs(self):
-        """Add user person profile to the form kwargs"""
-
-        kwargs = super().get_form_kwargs()
-
-        person = self.request.user.person
-        kwargs["person"] = person
-        return kwargs
-
-    def form_invalid(self, form):
-        return JsonResponse({"errors": form.errors}, status=400)
-
-    def form_valid(self, form):
-        messages.add_message(
-            request=self.request,
-            level=messages.SUCCESS,
-            message="Votre événement a été correctement créé.",
-        )
-
-        form.save()
-
-        return JsonResponse(
-            {
-                "status": "OK",
-                "id": form.instance.id,
-                "url": reverse("view_event", args=[form.instance.id]),
-            }
-        )
 
 
 class ModifyEventView(HardLoginRequiredMixin, PermissionsRequiredMixin, UpdateView):

@@ -9,12 +9,13 @@ from ..authentication.models import Role
 import django_filters
 from django_filters.rest_framework.backends import DjangoFilterBackend
 
-from ..lib.permissions import PermissionsOrReadOnly, RestrictViewPermissions
-from ..lib.pagination import LegacyPaginator
-from ..lib.filters import DistanceFilter, OrderByDistanceToBackend
-from ..lib.views import NationBuilderViewMixin, CreationSerializerMixin
+from agir.lib.permissions import PermissionsOrReadOnly, RestrictViewPermissions
+from agir.lib.pagination import LegacyPaginator
+from agir.lib.filters import DistanceFilter, OrderByDistanceToBackend
+from agir.lib.views import NationBuilderViewMixin, CreationSerializerMixin
 
-from . import serializers, models
+from . import models
+from .serializers import legacy as serializers
 
 
 class EventFilterSet(django_filters.rest_framework.FilterSet):

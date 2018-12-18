@@ -1,13 +1,18 @@
 from django.urls import path
 
+import agir.events.views.creation
 from . import views
 
 
 urlpatterns = [
-    path("evenements/creer/", views.CreateEventView.as_view(), name="create_event"),
+    path(
+        "evenements/creer/",
+        agir.events.views.creation.CreateEventView.as_view(),
+        name="create_event",
+    ),
     path(
         "evenements/creer/form/",
-        views.PerformCreateEventView.as_view(),
+        agir.events.views.creation.PerformCreateEventView.as_view(),
         name="perform_create_event",
     ),
     path("evenements/liste/", views.EventListView.as_view(), name="list_all_events"),

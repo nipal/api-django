@@ -2,8 +2,8 @@ from rest_framework import serializers, exceptions
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
-from ..lib.utils import front_url
-from ..lib.serializers import (
+from agir.lib.utils import front_url
+from agir.lib.serializers import (
     LegacyBaseAPISerializer,
     LegacyLocationAndContactMixin,
     RelatedLabelField,
@@ -11,9 +11,9 @@ from ..lib.serializers import (
     ExistingRelatedLabelField,
 )
 
-from ..people.models import Person, Role
+from agir.people.models import Person, Role
 
-from . import models
+from .. import models
 
 
 class LegacyEventSerializer(
