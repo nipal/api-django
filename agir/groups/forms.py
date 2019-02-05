@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 
 from agir.lib.form_components import *
+from agir.lib.form_fields import AcceptCreativeCommonsLicenceField
 from agir.lib.form_mixins import (
     LocationFormMixin,
     ContactFormMixin,
@@ -20,6 +21,7 @@ from agir.groups.tasks import (
     send_external_join_confirmation,
 )
 from agir.lib.tasks import geocode_support_group
+from agir.lib.views import SocialNetworkImageMixin
 
 __all__ = [
     "SupportGroupForm",
@@ -30,7 +32,9 @@ __all__ = [
 ]
 
 
-class SupportGroupForm(LocationFormMixin, ContactFormMixin, forms.ModelForm):
+class SupportGroupForm(
+    LocationFormMixin, ContactFormMixin, SocialNetworkImageMixin, forms.ModelForm
+):
     geocoding_task = geocode_support_group
 
     CHANGES = {
@@ -46,6 +50,8 @@ class SupportGroupForm(LocationFormMixin, ContactFormMixin, forms.ModelForm):
         "location_country": "location",
         "description": "information",
     }
+
+    image_accept_license = AcceptCreativeCommonsLicenceField()
 
     subtypes = forms.ModelMultipleChoiceField(
         queryset=SupportGroupSubtype.objects.filter(
@@ -106,6 +112,8 @@ class SupportGroupForm(LocationFormMixin, ContactFormMixin, forms.ModelForm):
 
         self.helper.layout = Layout(
             Row(FullCol("name")),
+            Row(FullCol("image")),
+            Row(FullCol("image_accept_license")),
             Section(
                 _("Informations de contact"),
                 Row(Div("contact_name", css_class="col-md-12")),
@@ -186,10 +194,24 @@ class SupportGroupForm(LocationFormMixin, ContactFormMixin, forms.ModelForm):
             if changes and self.cleaned_data.get("notify"):
                 send_support_group_changed_notification.delay(self.instance.pk, changes)
 
+    def clean(self):
+        cleaned_data = super().clean()
+        report_image = cleaned_data.get("image", None)
+        accept_license = cleaned_data.get("image_accept_license", False)
+
+        if report_image and not accept_license:
+            self.add_error(
+                "image_accept_license",
+                self.fields["image_accept_license"].error_messages["required_group"],
+            )
+
+        return cleaned_data
+
     class Meta:
         model = SupportGroup
         fields = (
             "name",
+            "image",
             "type",
             "subtypes",
             "contact_name",

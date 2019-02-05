@@ -75,7 +75,10 @@ class AcceptCreativeCommonsLicenceField(BooleanField):
         "required": _(
             "Vous devez accepter de placer votre image sous licence Creative Commons pour  l'ajouter à votre"
             " événement."
-        )
+        ),
+        "required_group": _(
+            "Vous devez accepter de placer votre image sous licence Creative Commons pour l'associer à votre groupe."
+        ),
     }
 
     default_label = _(
