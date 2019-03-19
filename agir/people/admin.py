@@ -153,6 +153,14 @@ class PersonAdmin(DisplayContactPhoneMixin, CenterOnFranceMixin, OSMGeoAdmin):
         "coordinates_type",
     )
 
+    search_fields = (
+        "emails__address__iexact",
+        "first_name",
+        "last_name",
+        "location_zip",
+        "contact_phone",
+    )
+
     list_filter = (
         DepartementListFilter,
         RegionListFilter,
@@ -166,11 +174,6 @@ class PersonAdmin(DisplayContactPhoneMixin, CenterOnFranceMixin, OSMGeoAdmin):
     inlines = (RSVPInline, MembershipInline, EmailInline)
 
     autocomplete_fields = ("tags",)
-
-    # doit être non vide pour afficher le formulaire de recherche,
-    # mais n'est en réalité pas utilisé pour déterminer les champs
-    # de recherche
-    search_fields = ["search", "contact_phone"]
 
     def get_search_results(self, request, queryset, search_term):
         if search_term:
@@ -255,7 +258,6 @@ class PersonFormForm(forms.ModelForm):
             "description": AdminRichEditorWidget(),
             "confirmation_note": AdminRichEditorWidget(),
             "custom_fields": AdminJsonWidget(),
-            "config": AdminJsonWidget(),
         }
 
     def clean_custom_fields(self):
@@ -350,7 +352,7 @@ class PersonFormAdmin(PersonFormAdminMixin, admin.ModelAdmin):
             _("Soumissions"),
             {"fields": ("submissions_number", "simple_link", "action_buttons")},
         ),
-        (_("Champs"), {"fields": ("main_question", "tags", "custom_fields", "config")}),
+        (_("Champs"), {"fields": ("main_question", "tags", "custom_fields")}),
         (
             _("Textes"),
             {

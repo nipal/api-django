@@ -82,8 +82,6 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,agir.local").split(",
 # Application definition
 
 INSTALLED_APPS = [
-    # before to override templates
-    "agir.lib",
     # default contrib apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -130,6 +128,7 @@ INSTALLED_APPS = [
     "agir.groups",
     "agir.polls",
     "agir.clients",
+    "agir.lib",
     "agir.front",
     "agir.carte",
     "agir.webhooks",
@@ -612,5 +611,3 @@ ANYMAIL = {
     + ":"
     + os.environ.get("SENDGRID_SES_WEBHOOK_PASSWORD", "fi"),
 }
-
-BANNER_CONFIG = {"thumbnail": (400, 250), "banner": (1200, 400)}

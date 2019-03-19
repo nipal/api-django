@@ -37,6 +37,21 @@ urlpatterns = [
     ),
     path("profil/", views.ChangeProfileView.as_view(), name="change_profile"),
     path(
+        "profil_f1/",
+        views.ChangeProfilePersoView.as_view(),
+        name="change_profile_perso",
+    ),
+    path(
+        "profil_f2/",
+        views.ChangeProfileContactView.as_view(),
+        name="change_profile_contact",
+    ),
+    path(
+        "profil_f3/",
+        views.ChangeProfileSkillsView.as_view(),
+        name="change_profile_skills",
+    ),
+    path(
         "profil/confirmation/",
         views.ChangeProfileConfirmationView.as_view(),
         name="confirmation_profile",
@@ -86,11 +101,6 @@ urlpatterns = [
         "formulaires/<slug:slug>/confirmation/",
         views.PeopleFormConfirmationView.as_view(),
         name="person_form_confirmation",
-    ),
-    path(
-        "formulaires/<slug:slug>/reponses/",
-        views.PeopleFormSubmissionsView.as_view(),
-        name="person_form_submissions",
     ),
     path(
         "telephone/sms",

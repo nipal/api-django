@@ -30,7 +30,7 @@ class CalendarIterator:
 
 
 class CalendarField(forms.Field):
-    widget = forms.CheckboxSelectMultiple
+    widget = forms.SelectMultiple
     default_error_messages = {
         "invalid_choice": "Choix invalide",
         "invalid_list": "Devrait être une liste",
@@ -39,7 +39,6 @@ class CalendarField(forms.Field):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.widget.choices = CalendarIterator(self)
-        self.widget.attrs["class"] = "widget-limit-max-height"
 
     def to_python(self, value):
         if value in self.empty_values:
@@ -91,7 +90,13 @@ class CalendarField(forms.Field):
 
 
 class EventAdminForm(CoordinatesFormMixin, forms.ModelForm):
-    calendars = CalendarField(required=False, label="Agendas")
+    calendars = CalendarField(
+        required=False,
+        label="Agendas",
+        help_text=_(
+            "Maintenez appuyé « Ctrl », ou « Commande (touche pomme) » sur un Mac, pour en sélectionner plusieurs."
+        ),
+    )
 
     send_visibility_notification = BooleanField(
         required=False,

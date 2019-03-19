@@ -1,6 +1,6 @@
+import logging
 from datetime import timedelta
 
-import logging
 from crispy_forms.bootstrap import FormActions, FieldWithButtons
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Fieldset, Row, Div, Submit, Layout
@@ -19,7 +19,6 @@ from agir.lib.phone_numbers import (
     is_french_number,
     is_mobile_number,
 )
-
 from agir.people.actions.validation_codes import (
     send_new_code,
     RateLimitedException,

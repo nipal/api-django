@@ -141,7 +141,7 @@ class LocationMixin(models.Model):
     location_zip = models.CharField(_("code postal"), max_length=20, blank=True)
     location_state = models.CharField(_("état"), max_length=40, blank=True)
     location_country = CountryField(
-        _("pays"), blank=True, blank_label=_("(sélectionner un pays)"), default="FR"
+        _("pays"), blank=True, blank_label=_("(sélectionner un pays)")
     )
 
     # legacy fields --> copied from NationBuilder
@@ -387,7 +387,7 @@ class ImageMixin(models.Model):
     image = StdImageField(
         _("image"),
         upload_to=banner_path,
-        variations=settings.BANNER_CONFIG,
+        variations={"thumbnail": (400, 250), "banner": (1200, 400)},
         blank=True,
         help_text=_(
             "Vous pouvez ajouter une image de bannière : elle apparaîtra sur la page, et sur les réseaux"
