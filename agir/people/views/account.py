@@ -1,8 +1,6 @@
-import sys
 from uuid import UUID
 
 from django.contrib import messages
-from django.contrib.auth import logout
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
@@ -28,10 +26,15 @@ from agir.people.forms import (
 )
 from agir.people.models import Person
 
+# from agir.people.views import NAVS_PROFILE_PREFERENCE
+
 
 class MessagePreferencesView(SoftLoginRequiredMixin, UpdateView):
     template_name = "people/message_preferences.html"
     success_url = reverse_lazy("message_preferences")
+
+    # def get_context_data(self, **kwargs):
+    #     return super().get_context_data(tqb_code=NAVS_PROFILE_PREFERENCE)
 
     def get_object(self, queryset=None):
         return self.request.user.person
@@ -66,36 +69,17 @@ class MessagePreferencesView(SoftLoginRequiredMixin, UpdateView):
         return res
 
 
-class DeleteAccountView(HardLoginRequiredMixin, DeleteView):
-    template_name = "people/delete_account.html"
-
-    def get_success_url(self):
-        return reverse("delete_account_success")
-
-    def get_object(self, queryset=None):
-        return self.request.user.person
-
-    def delete(self, request, *args, **kwargs):
-        messages.add_message(
-            self.request, messages.SUCCESS, "Votre compte a bien été supprimé !"
-        )
-        response = super().delete(request, *args, **kwargs)
-        logout(self.request)
-
-        return response
-
-
 class ConfirmChangeMail(View):
     """
     Confirme et enregistre une nouvelle adresse email.
 
     Cette vue peut être atteinte depuis n'importe quel navigateur donc pas besoin d'être connecté.
     Elle vérifie l'integriter du mail + user_pk + token
-    Elle redirige vers la vue `message_preferences` en cas de succès
+    Elle redirige vers la vue `profile_contact` en cas de succès
     En cas de problème vérification du token une page est affiché explicant le problème: `invalid`, `expiration`
     """
 
-    success_url = reverse_lazy("message_preferences")
+    success_url = reverse_lazy("profile_contact")
     error_template = "people/confirmation_mail_change_error.html"
     error_messages = {
         "invalid": "Il semble que celui-ci est invalide. Avez-vous bien cliqué sur le bouton, ou copié la totalité du lien ?",
@@ -239,7 +223,7 @@ class RedirectAlreadyValidatedPeopleMixin:
             messages.add_message(
                 request, messages.SUCCESS, _("Votre numéro a déjà été validé.")
             )
-            return HttpResponseRedirect(reverse("message_preferences"))
+            return HttpResponseRedirect(reverse("profile_contact"))
         elif request.user.person.contact_phone_status == Person.CONTACT_PHONE_PENDING:
             messages.add_message(
                 request,
@@ -298,7 +282,7 @@ class CodeValidationView(
         return kwargs
 
     def get_success_url(self):
-        return self.get_redirect_url() or reverse_lazy("message_preferences")
+        return self.get_redirect_url() or reverse_lazy("profile_contact")
 
     def form_valid(self, form):
         person = self.request.user.person

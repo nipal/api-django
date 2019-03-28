@@ -1,6 +1,6 @@
+import logging
 from datetime import timedelta
 
-import logging
 from crispy_forms.bootstrap import FormActions, FieldWithButtons
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Fieldset, Row, Div, Submit, Layout
@@ -19,7 +19,6 @@ from agir.lib.phone_numbers import (
     is_french_number,
     is_mobile_number,
 )
-
 from agir.people.actions.validation_codes import (
     send_new_code,
     RateLimitedException,
@@ -42,103 +41,103 @@ class PreferencesFormMixin(forms.ModelForm):
         self.helper.layout = Layout(*self.get_fields())
 
     def get_fields(self, fields=None):
-        emails = self.instance.emails.all()
-        self.several_mails = len(emails) > 1
+        # emails = self.instance.emails.all()
+        # self.several_mails = len(emails) > 1
 
         fields = fields or []
 
-        block_template = """
-                    <label class="control-label">{label}</label>
-                    <div class="controls">
-                      <div>{value}</div>
-                      <p class="help-block">{help_text}</p>
-                    </div>
-                """
+        # block_template = """
+        #             <label class="control-label">{label}</label>
+        #             <div class="controls">
+        #               <div>{value}</div>
+        #               <p class="help-block">{help_text}</p>
+        #             </div>
+        #         """
 
-        email_management_block = HTML(
-            format_html(
-                block_template,
-                label=_("Gérez vos adresses emails"),
-                value=format_html(
-                    '<a href="{}" class="btn btn-default">{}</a>',
-                    reverse("email_management"),
-                    _("Accéder au formulaire de gestion de vos emails"),
-                ),
-                help_text=_(
-                    "Ce formulaire vous permet d'ajouter de nouvelles adresses ou de supprimer les existantes"
-                ),
-            )
-        )
+        # email_management_block = HTML(
+        #     format_html(
+        #         block_template,
+        #         label=_("Gérez vos adresses emails"),
+        #         value=format_html(
+        #             '<a href="{}" class="btn btn-default">{}</a>',
+        #             reverse("email_management"),
+        #             _("Accéder au formulaire de gestion de vos emails"),
+        #         ),
+        #         help_text=_(
+        #             "Ce formulaire vous permet d'ajouter de nouvelles adresses ou de supprimer les existantes"
+        #         ),
+        #     )
+        # )
+        #
+        # validation_link = format_html(
+        #     '<input type="submit" name="validation" value="{label}" class="btn btn-default">',
+        #     label=_("Valider mon numéro de téléphone"),
+        # )
+        #
+        # unverified = (
+        #     self.instance.contact_phone_status == Person.CONTACT_PHONE_UNVERIFIED
+        # )
 
-        validation_link = format_html(
-            '<input type="submit" name="validation" value="{label}" class="btn btn-default">',
-            label=_("Valider mon numéro de téléphone"),
-        )
+        # validation_block = HTML(
+        #     format_html(
+        #         block_template,
+        #         label=_("Vérification de votre compte"),
+        #         value=validation_link
+        #         if unverified
+        #         else f"Compte {self.instance.get_contact_phone_status_display().lower()}",
+        #         help_text=_(
+        #             "Validez votre numéro de téléphone afin de certifier votre compte"
+        #         )
+        #         if unverified
+        #         else "",
+        #     )
+        # )
+        #
+        # email_fieldset_name = _("Mes adresses emails")
+        # email_label = _("Email de contact")
+        # email_help_text = _(
+        #     "L'adresse que nous utilisons pour vous envoyer les lettres d'informations et les notifications."
+        # )
 
-        unverified = (
-            self.instance.contact_phone_status == Person.CONTACT_PHONE_UNVERIFIED
-        )
+        # if self.several_mails:
+        #     self.fields["primary_email"] = forms.ModelChoiceField(
+        #         queryset=emails,
+        #         required=True,
+        #         label=email_label,
+        #         initial=emails[0],
+        #         help_text=email_help_text,
+        #     )
+        #     fields.append(
+        #         Fieldset(
+        #             email_fieldset_name,
+        #             Row(HalfCol("primary_email"), HalfCol(email_management_block)),
+        #         )
+        #     )
+        # else:
+        #     fields.append(
+        #         Fieldset(
+        #             email_fieldset_name,
+        #             Row(
+        #                 HalfCol(
+        #                     HTML(
+        #                         block_template.format(
+        #                             label=email_label,
+        #                             value=emails[0].address,
+        #                             help_text=email_help_text,
+        #                         )
+        #                     )
+        #                 ),
+        #                 HalfCol(email_management_block),
+        #             ),
+        #         )
+        #     )
 
-        validation_block = HTML(
-            format_html(
-                block_template,
-                label=_("Vérification de votre compte"),
-                value=validation_link
-                if unverified
-                else f"Compte {self.instance.get_contact_phone_status_display().lower()}",
-                help_text=_(
-                    "Validez votre numéro de téléphone afin de certifier votre compte"
-                )
-                if unverified
-                else "",
-            )
-        )
-
-        email_fieldset_name = _("Mes adresses emails")
-        email_label = _("Email de contact")
-        email_help_text = _(
-            "L'adresse que nous utilisons pour vous envoyer les lettres d'informations et les notifications."
-        )
-
-        if self.several_mails:
-            self.fields["primary_email"] = forms.ModelChoiceField(
-                queryset=emails,
-                required=True,
-                label=email_label,
-                initial=emails[0],
-                help_text=email_help_text,
-            )
-            fields.append(
-                Fieldset(
-                    email_fieldset_name,
-                    Row(HalfCol("primary_email"), HalfCol(email_management_block)),
-                )
-            )
-        else:
-            fields.append(
-                Fieldset(
-                    email_fieldset_name,
-                    Row(
-                        HalfCol(
-                            HTML(
-                                block_template.format(
-                                    label=email_label,
-                                    value=emails[0].address,
-                                    help_text=email_help_text,
-                                )
-                            )
-                        ),
-                        HalfCol(email_management_block),
-                    ),
-                )
-            )
-
-        fields.append(
-            Fieldset(
-                _("Mon numéro de téléphone"),
-                Row(HalfCol("contact_phone"), HalfCol(validation_block)),
-            )
-        )
+        # fields.append(
+        #     Fieldset(
+        #         _("Mon numéro de téléphone"),
+        #         Row(HalfCol("contact_phone"), HalfCol(validation_block)),
+        #     )
+        # )
 
         return fields
 
@@ -203,7 +202,9 @@ class InsoumisePreferencesForm(TagMixin, PreferencesFormMixin):
     tag_model_class = PersonTag
 
     def get_fields(self, fields=None):
-        fields = super().get_fields()
+        # fields = super().get_fields()
+
+        fields = fields or []
         fields.extend(
             [
                 Fieldset(
@@ -221,10 +222,10 @@ class InsoumisePreferencesForm(TagMixin, PreferencesFormMixin):
                     ),
                     css_class="text-right",
                 ),
-                Fieldset(
-                    _("Ma participation"),
-                    Row(HalfCol("draw_participation"), HalfCol("gender")),
-                ),
+                # Fieldset(
+                #     _("Ma participation"),
+                #     Row(HalfCol("draw_participation"), HalfCol("gender")),
+                # ),
             ]
         )
 
@@ -277,7 +278,7 @@ class InsoumisePreferencesForm(TagMixin, PreferencesFormMixin):
             "event_notifications",
             "draw_participation",
             "gender",
-            "contact_phone",
+            # "contact_phone",
         ]
 
 
@@ -297,7 +298,6 @@ class AddEmailForm(forms.ModelForm):
                 "rate_limit": "Trop d'email de confirmation envoyés. Merci de réessayer dans quelques minutes.",
             }
         )
-
         self.helper = FormHelper()
         self.helper.form_method = "POST"
         self.helper.add_input(Submit("submit", "Ajouter"))

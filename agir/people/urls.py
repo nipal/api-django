@@ -13,7 +13,9 @@ urlpatterns = [
         TemplateView.as_view(template_name="people/unsubscribe_success.html"),
         name="unsubscribe_success",
     ),
-    path("supprimer/", views.DeleteAccountView.as_view(), name="delete_account"),
+    path(
+        "profile/supprimer/", views.DeleteAccountView.as_view(), name="delete_account"
+    ),
     path(
         "supprimer/succes",
         TemplateView.as_view(template_name="people/delete_account_success.html"),
@@ -35,9 +37,62 @@ urlpatterns = [
         views.ConfirmSubscriptionView.as_view(),
         name="subscription_confirm",
     ),
-    path("profil/", views.ChangeProfileView.as_view(), name="change_profile"),
+    path("profile/", views.ChangeProfileView.as_view(), name="change_profile"),
     path(
-        "profil/confirmation/",
+        "profile/identite/",
+        views.ChangeProfilePersoView.as_view(),
+        name="profile_perso",
+    ),
+    path(
+        "profile/contact/",
+        views.ChangeProfileContactView.as_view(),
+        name="profile_contact",
+    ),
+    path(
+        "profile/competence",
+        views.ChangeProfileSkillsView.as_view(),
+        name="profile_skills",
+    ),
+    path(
+        "profile/engagement/", views.VolunteerView.as_view(), name="profile_involvement"
+    ),
+    path(
+        "profile/preference/",
+        views.ChangeProfilPreference.as_view(),
+        name="profile_preference",
+    ),
+    path(
+        "profile/participation/",
+        views.ChangeProfileParticipation.as_view(),
+        name="profile_participation",
+    ),
+    # path(
+    #     "profile/supression",
+    #     views.DeleteAccountView.as_view(),
+    #     name="profile_privacy",
+    # ),
+    path(
+        "profile/contact/adresses/",
+        views.AddEmailMergeAccountView.as_view(),
+        name="manage_account",
+    ),
+    path(
+        "profile/contact/adresses/confirmer",
+        views.ConfirmMergeAccount.as_view(),
+        name="confirm_merge_account",
+    ),
+    path(
+        "profile/contact/adresses/<int:pk>/principale/",
+        views.ChangePrimaryEmail.as_view(),
+        name="change_mail",
+    ),
+    path(
+        "profile/contact/adresses/fusion_attente/",
+        views.SendConfirmationMergeAccount.as_view(),
+        name="confirm_merge_account_sent",
+    ),
+    path(
+        "profile/confirmation/",
         views.ChangeProfileConfirmationView.as_view(),
         name="confirmation_profile",
     ),
@@ -86,11 +141,6 @@ urlpatterns = [
         "formulaires/<slug:slug>/confirmation/",
         views.PeopleFormConfirmationView.as_view(),
         name="person_form_confirmation",
-    ),
-    path(
-        "formulaires/<slug:slug>/reponses/",
-        views.PeopleFormSubmissionsView.as_view(),
-        name="person_form_submissions",
     ),
     path(
         "telephone/sms",

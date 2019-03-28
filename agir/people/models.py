@@ -199,6 +199,15 @@ class Person(
         ),
     )
 
+    subscribed_sms = models.BooleanField(
+        _("Recevoir les sms d'information"),
+        default=True,
+        blank=True,
+        help_text=_(
+            "Vous recevrez des sms de la France insoumise comme: des meeting près de chez vous, des appels à volontaire..."
+        ),
+    )
+
     event_notifications = models.BooleanField(
         _("Recevoir les notifications des événements"),
         default=True,
@@ -244,7 +253,7 @@ class Person(
     )
 
     contact_phone = ValidatedPhoneNumberField(
-        _("Numéro de téléphone de contact"),
+        _("Numéro de contact"),
         blank=True,
         validated_field_name="contact_phone_status",
         unverified_value=CONTACT_PHONE_UNVERIFIED,
