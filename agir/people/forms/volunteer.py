@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, HTML
+from crispy_forms.layout import Submit, Layout, Row, HTML, Fieldset
 from django import forms
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -34,12 +34,16 @@ class VolunteerForm(ContactPhoneNumberMixin, TagMixin, forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 HalfCol(
-                    HTML(format_html("<h4>{}</h4>", "Agir près de chez vous")),
-                    *(tag for tag, title, desc in action_tags["nearby"])
+                    Fieldset(
+                        "Agir près de chez vous",
+                        *(tag for tag, title, desc in action_tags["nearby"])
+                    )
                 ),
                 HalfCol(
-                    HTML(format_html("<h4>{}</h4>", "Agir sur internet")),
-                    *(tag for tag, title, desc in action_tags["internet"])
+                    Fieldset(
+                        "Agir sur internet",
+                        *(tag for tag, title, desc in action_tags["internet"])
+                    )
                 ),
             ),
             Row(HalfCol("contact_phone")),

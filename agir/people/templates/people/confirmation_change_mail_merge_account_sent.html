@@ -1,0 +1,22 @@
+{% extends "front/layout.html" %}
+
+{% block title %}confirmé l'adresse e-mail{% endblock %}
+
+{% block main %}
+    {% if is_merging %}
+        <h1 class="headline">Veuillez confirmer la fusion de compte avec</h1>
+    {% else %}
+        <h1 class="headline">Veuillez confirmer votre nouvelle adresse</h1>
+    {% endif %}
+    <div id="content">
+        <div class="text-content">
+            <p>
+                Pour confirmer {% if is_merging %} la fusion de compte {% else %} votre nouvelle adresse {% endif %}
+                , vérifiez votre boîte email <b>{{ email }}</b> et cliquez sur le bouton de validation.
+            </p>
+            <p>
+                Cette procédure est utilisée pour vérifier que vous êtes bien propriétaire de l'adresse email inscrite.
+            </p>
+        </div>
+    </div>
+{% endblock %}

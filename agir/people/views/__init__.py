@@ -10,7 +10,7 @@ __all__ = [
     "ConfirmationMailSentView",
     "SimpleSubscriptionView",
     "OverseasSubscriptionView",
-    "ChangeProfileView",
+    "ChangeProfilView",
     "ChangeProfileConfirmationView",
     "VolunteerView",
     "VolunteerConfirmationView",

@@ -1,0 +1,9 @@
+<div class="col-xs-12 col-md-2">
+    <menue class="nav nav-pills nav-stacked" >
+        {% for tab in navs %}
+            <li name="nav-tabs" id="nav-tabs-{{ forloop.counter0 }}" role="presentation" class="{% if tab_code == tab.id %} active {% endif %}">
+                <a href="{{ tab.link }}">{{ tab.title }}</a>
+            </li>
+        {% endfor %}
+    </menue>
+</div>

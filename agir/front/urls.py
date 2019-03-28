@@ -18,6 +18,11 @@ urlpatterns = [
     ),
     # old redirections
     path(
+        "message_preferences/",
+        RedirectView.as_view(url=reverse_lazy("profile_preferences")),
+        name="preferences",
+    ),
+    path(
         "groupes/",
         RedirectView.as_view(url=reverse_lazy("dashboard")),
         name="list_groups",
