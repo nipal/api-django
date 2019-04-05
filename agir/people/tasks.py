@@ -31,7 +31,7 @@ def send_welcome_mail(self, person_pk):
             code="WELCOME_MESSAGE",
             subject=_("Bienvenue sur la plateforme de la France insoumise"),
             from_email=settings.EMAIL_FROM,
-            bindings={"PROFILE_LINK": front_url("profile_personal")},
+            bindings={"PROFILE_LINK": front_url("personal_informations")},
             recipients=[person],
         )
     except (smtplib.SMTPException, socket.error) as exc:

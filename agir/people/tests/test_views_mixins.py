@@ -17,15 +17,15 @@ class NavsProfileMixinTestCase(TestCase):
 
         response = self.client.get(reverse("profile_contact"))
 
-        self.assertContains(response, reverse("profile_personal"))
+        self.assertContains(response, reverse("personal_informations"))
         self.assertContains(response, reverse("profile_contact"))
-        self.assertContains(response, reverse("profile_preferences"))
-        self.assertContains(response, reverse("profile_skills"))
-        self.assertContains(response, reverse("profile_involvement"))
-        self.assertContains(response, reverse("profile_participation"))
-        self.assertContains(response, reverse(("profile_privacy")))
+        self.assertContains(response, reverse("contact_preferences"))
+        self.assertContains(response, reverse("skills"))
+        self.assertContains(response, reverse("voluteer"))
+        self.assertContains(response, reverse("participation"))
+        self.assertContains(response, reverse(("personal_data")))
 
-        self.assertNotContains(response, reverse("profile_rejoin"))
+        self.assertNotContains(response, reverse("become_insoumise"))
 
     def test_can_see_not_insoumis_menue(self):
         self.person.is_insoumise = False
@@ -34,11 +34,11 @@ class NavsProfileMixinTestCase(TestCase):
         response = self.client.get(reverse("profile_contact"))
 
         self.assertContains(response, reverse("profile_contact"))
-        self.assertContains(response, reverse("profile_rejoin"))
-        self.assertContains(response, reverse(("profile_privacy")))
+        self.assertContains(response, reverse("become_insoumise"))
+        self.assertContains(response, reverse(("personal_data")))
 
-        self.assertNotContains(response, reverse("profile_participation"))
-        self.assertNotContains(response, reverse("profile_preferences"))
-        self.assertNotContains(response, reverse("profile_skills"))
-        self.assertNotContains(response, reverse("profile_personal"))
-        self.assertNotContains(response, reverse("profile_involvement"))
+        self.assertNotContains(response, reverse("participation"))
+        self.assertNotContains(response, reverse("contact_preferences"))
+        self.assertNotContains(response, reverse("skills"))
+        self.assertNotContains(response, reverse("personal_informations"))
+        self.assertNotContains(response, reverse("voluteer"))

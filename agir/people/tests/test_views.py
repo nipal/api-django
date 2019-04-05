@@ -245,11 +245,11 @@ class ProfileTestCase(TestCase):
         self.person.subscribed = False
         self.person.save()
 
-        res = self.client.get(reverse("profile_preferences"))
+        res = self.client.get(reverse("contact_preferences"))
         self.assertContains(res, "subscribed")
 
         res = self.client.post(
-            reverse("profile_preferences"), data={"subscribed": "on"}
+            reverse("contact_preferences"), data={"subscribed": "on"}
         )
         self.person.refresh_from_db()
         self.assertEqual(self.person.subscribed, True)
@@ -263,7 +263,7 @@ class ProfileTestCase(TestCase):
         self.person.draw_notifications = True
         self.person.save()
 
-        res = self.client.post(reverse("profile_preferences"), data={"no_mail": True})
+        res = self.client.post(reverse("contact_preferences"), data={"no_mail": True})
         self.assertEqual(res.status_code, 302)
         self.person.refresh_from_db()
         self.assertEqual(self.person.subscribed, False)
@@ -293,7 +293,7 @@ class ProfileFormTestCase(TestCase):
 
     def test_can_add_tag(self):
         response = self.client.post(
-            reverse("profile_skills"), {**self.sample_data, "info blogueur": "on"}
+            reverse("skills"), {**self.sample_data, "info blogueur": "on"}
         )
 
         self.assertEqual(response.status_code, 302)
@@ -309,16 +309,16 @@ class ProfileFormTestCase(TestCase):
         }
 
         response = self.client.post(
-            reverse("profile_personal"), {**self.sample_data, **address_fields}
+            reverse("personal_informations"), {**self.sample_data, **address_fields}
         )
-        self.assertRedirects(response, reverse("profile_personal"))
+        self.assertRedirects(response, reverse("personal_informations"))
 
         geocode_person.delay.assert_called_once()
         self.assertEqual(geocode_person.delay.call_args[0], (self.person.pk,))
 
         geocode_person.reset_mock()
         response = self.client.post(
-            reverse("profile_personal"),
+            reverse("personal_informations"),
             {
                 **self.sample_data,
                 "first_name": "Arthur",
@@ -326,13 +326,15 @@ class ProfileFormTestCase(TestCase):
                 **address_fields,
             },
         )
-        self.assertRedirects(response, reverse("profile_personal"))
+        self.assertRedirects(response, reverse("personal_informations"))
         geocode_person.delay.assert_not_called()
 
     def test_cannot_validate_form_without_country(self):
         del self.sample_data["location_country"]
 
-        response = self.client.post(reverse("profile_personal"), data=self.sample_data)
+        response = self.client.post(
+            reverse("personal_informations"), data=self.sample_data
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, "has-error")
 
@@ -341,28 +343,31 @@ class ProfileFormTestCase(TestCase):
         self.sample_data["location_zip"] = ""
         self.sample_data["location_country"] = "DE"
 
-        response = self.client.post(reverse("profile_personal"), data=self.sample_data)
+        response = self.client.post(
+            reverse("personal_informations"), data=self.sample_data
+        )
         self.assertNotContains(response, "Ce champ est obligatoire.", status_code=302)
 
     def test_cannot_validate_form_without_zip_code_when_in_france(self):
         self.sample_data["location_zip"] = ""
 
-        response = self.client.post(reverse("profile_personal"), data=self.sample_data)
+        response = self.client.post(
+            reverse("personal_informations"), data=self.sample_data
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, "has-error")
 
     def test_weird_values_for_mandates_should_not_crash_the_form(self):
         del self.sample_data["mandates"]
 
-        res = self.client.post(reverse("profile_skills"), data=self.sample_data)
+        res = self.client.post(reverse("skills"), data=self.sample_data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         testing_values = ["", "hhfedhgyu", '"huihui"', '{"key": "value"}', None]
 
         for test_value in testing_values:
             res = self.client.post(
-                reverse("profile_skills"),
-                data={**self.sample_data, "mandates": test_value},
+                reverse("skills"), data={**self.sample_data, "mandates": test_value}
             )
             self.assertEqual(
                 res.status_code,
@@ -377,7 +382,7 @@ class ActivityAblebilityFormTestCases(TestCase):
         self.client.force_login(self.person.role)
 
     def test_form_is_displayed(self):
-        url_form = reverse("profile_skills")
+        url_form = reverse("skills")
 
         response = self.client.post(
             url_form,
@@ -401,7 +406,7 @@ class InformationConfidentialityFormTestCases(TestCase):
         self.client.force_login(self.person.role)
 
     def test_form_is_displayed(self):
-        url_form = reverse("profile_privacy")
+        url_form = reverse("personal_data")
 
         response = self.client.get(url_form)
 
@@ -414,7 +419,7 @@ class InformationPersonalFormTestCases(TestCase):
         self.client.force_login(self.person.role)
 
     def test_form_is_displayed(self):
-        url_form = reverse("profile_personal")
+        url_form = reverse("personal_informations")
 
         response = self.client.post(
             url_form,
@@ -452,7 +457,7 @@ class VolunteerFormTestCases(TestCase):
         self.client.force_login(self.person.role)
 
     def test_form_is_displayed(self):
-        url_form = reverse("profile_involvement")
+        url_form = reverse("voluteer")
 
         response = self.client.post(
             url_form,
@@ -473,7 +478,7 @@ class PreferencesFormTestCases(TestCase):
         self.client.force_login(self.person.role)
 
     def test_form_is_displayed(self):
-        url_form = reverse("profile_preferences")
+        url_form = reverse("contact_preferences")
 
         response = self.client.post(
             url_form,
@@ -504,7 +509,7 @@ class ParticipationFormTestCases(TestCase):
         self.client.force_login(self.person.role)
 
     def test_form_is_displayed(self):
-        url_form = reverse("profile_participation")
+        url_form = reverse("participation")
 
         response = self.client.post(
             url_form, data={"draw_participation": "on", "gender": "O"}, follow=True
@@ -525,7 +530,7 @@ class ExternalPersonPreferencesFormTestCases(TestCase):
 
     def test_form_is_displayed(self):
         self.client.force_login(self.person.role)
-        url_form = reverse("profile_rejoin")
+        url_form = reverse("become_insoumise")
 
         response = self.client.post(url_form, data={"is_insoumise": "on"}, follow=True)
 

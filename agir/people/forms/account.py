@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from crispy_forms.bootstrap import FormActions, FieldWithButtons
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Fieldset, Row, Div, Submit, Layout
+from crispy_forms.layout import Fieldset, Row, Div, Submit, Layout, HTML
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import Form, CharField
@@ -54,7 +54,7 @@ class PreferencesFormMixin(forms.ModelForm):
         fields = ["contact_phone"]
 
 
-class ExternalPersonPreferencesForm(PreferencesFormMixin):
+class BecomeInsoumiseForm(PreferencesFormMixin):
     is_insoumise = forms.BooleanField(
         required=False,
         label=_("Je souhaite rejoindre la France insoumise"),
@@ -65,25 +65,24 @@ class ExternalPersonPreferencesForm(PreferencesFormMixin):
         ),
     )
 
-    def clean(self):
-        cleaned_data = super().clean()
-
-        if cleaned_data["is_insoumise"]:
-            cleaned_data["subscribed"] = True
-            cleaned_data["group_notifications"] = True
-            cleaned_data["event_notifications"] = True
-
     def get_fields(self, fields=None):
         fields = super().get_fields()
-        fields.append(FormActions(Submit("submit", "Sauvegarder mes préférences")))
-        fields.extend(
-            [
-                Fieldset(
-                    _("Rejoindre la France insoumise"),
-                    "is_insoumise",
-                    FormActions(Submit("submit", "Valider")),
+        if not self.instance.is_insoumise:
+            fields.append(
+                HTML(
+                    """<div class="alert alert-info">
+                <p>Vous disposez d'un compte sur la plateforme d'action de la France insoumise, mais n'êtes pas membre
+                de la France insoumise. Vous ne recevez par conséquent pas les lettres d'informations du mouvement, et
+                vous ne pouvez rejoindre que certains types de groupes et d'événements.</p>
+            </div>"""
                 )
-            ]
+            )
+        fields.append(
+            Fieldset(
+                _("Rejoindre la France insoumise"),
+                "is_insoumise",
+                FormActions(Submit("submit", "Valider")),
+            )
         )
 
         return fields

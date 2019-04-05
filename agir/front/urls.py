@@ -19,7 +19,7 @@ urlpatterns = [
     # old redirections
     path(
         "message_preferences/",
-        RedirectView.as_view(url=reverse_lazy("profile_preferences")),
+        RedirectView.as_view(url=reverse_lazy("contact_preferences")),
         name="preferences",
     ),
     path(

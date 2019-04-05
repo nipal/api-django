@@ -21,7 +21,7 @@ def send_donation_email(self, person_pk):
             code="DONATION_MESSAGE",
             subject="Merci d'avoir donné !",
             from_email=settings.EMAIL_FROM,
-            bindings={"PROFILE_LINK": front_url("profile_personal")},
+            bindings={"PROFILE_LINK": front_url("personal_informations")},
             recipients=[person],
         )
     except (smtplib.SMTPException, socket.error) as exc:

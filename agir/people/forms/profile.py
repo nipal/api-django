@@ -237,7 +237,7 @@ class InformationConfidentialityForm(Form):
                 label="Suppression de votre compte",
                 value=delete_account_link,
                 help_text="Attention cette action est irréversible !"
-                "Si vous avez des questions au sujet des données personnelles vous pouvez",
+                " Si vous avez des questions au sujet des données personnelles vous pouvez",
                 url_contact="https://lafranceinsoumise.fr/formulaire-de-contact/",
                 link_text="vous rendre ici.",
             )

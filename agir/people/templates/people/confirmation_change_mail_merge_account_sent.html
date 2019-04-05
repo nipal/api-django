@@ -4,15 +4,16 @@
 
 {% block main %}
     {% if is_merging %}
-        <h1 class="headline">Veuillez confirmer la fusion de compte avec</h1>
+        <h1 class="headline">Veuillez confirmer la fusion de compte</h1>
     {% else %}
         <h1 class="headline">Veuillez confirmer votre nouvelle adresse</h1>
     {% endif %}
     <div id="content">
         <div class="text-content">
             <p>
-                Pour confirmer {% if is_merging %} la fusion de compte {% else %} votre nouvelle adresse {% endif %}
-                , vérifiez votre boîte email <b>{{ email }}</b> et cliquez sur le bouton de validation.
+                Pour confirmer {% if is_merging %} la fusion du compte associé à l'adresse {{ address1 }}
+                et du compte associé à l'adresse {{ address2 }} {% else %} votre nouvelle adresse {% endif %}
+                , vérifiez votre boîte email <b>{{ address2 }}</b> et cliquez sur le bouton de validation.
             </p>
             <p>
                 Cette procédure est utilisée pour vérifier que vous êtes bien propriétaire de l'adresse email inscrite.

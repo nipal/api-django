@@ -23,7 +23,7 @@ from agir.people.forms import (
     VolunteerForm,
     ParticipationForm,
     InformationConfidentialityForm,
-    ExternalPersonPreferencesForm,
+    BecomeInsoumiseForm,
 )
 from agir.people.forms.profile import (
     InformationPersonalForm,
@@ -41,7 +41,7 @@ from agir.people.views.mixins import (
     NAVS_PROFILE_SKILLS,
     NAVS_PROFILE_ACT,
     NAVS_PROFILE_CONFIDENTIALITY,
-    NAVS_PROFILE_REJOIN,
+    NAVS_PROFILE_BECOME_INSOUMISE,
 )
 
 
@@ -67,10 +67,10 @@ class DeleteAccountView(HardLoginRequiredMixin, NavsProfileMixin, DeleteView):
         return response
 
 
-class ChangeProfilePreference(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
+class ContactPreferencesView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
     template_name = "people/profile_default.html"
     form_class = PreferencesForm
-    success_url = reverse_lazy("profile_preferences")
+    success_url = reverse_lazy("contact_preferences")
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(tab_code=NAVS_PROFILE_PREFERENCES, **kwargs)
@@ -98,10 +98,10 @@ class ChangeProfilePreference(SoftLoginRequiredMixin, NavsProfileMixin, UpdateVi
         return res
 
 
-class ChangeProfileParticipation(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
+class ParticipationView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
     template_name = "people/profile_default.html"
     form_class = ParticipationForm
-    success_url = reverse_lazy("profile_participation")
+    success_url = reverse_lazy("participation")
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(tab_code=NAVS_PROFILE_PARTICIPATION, **kwargs)
@@ -111,23 +111,32 @@ class ChangeProfileParticipation(SoftLoginRequiredMixin, NavsProfileMixin, Updat
         return self.request.user.person
 
 
-class ChangeProfileRejoin(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
+class BecomeInsoumiseView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
     template_name = "people/profile_default.html"
-    form_class = ExternalPersonPreferencesForm
-    success_url = reverse_lazy("profile_rejoin")
+    form_class = BecomeInsoumiseForm
+    success_url = reverse_lazy("personal_informations")
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(tab_code=NAVS_PROFILE_REJOIN, **kwargs)
+        return super().get_context_data(
+            tab_code=NAVS_PROFILE_BECOME_INSOUMISE, **kwargs
+        )
+
+    def form_valid(self, form):
+        self.object.subscribed = True
+        self.object.subscribed_sms = True
+        self.object.group_notifications = True
+        self.object.event_notifications = True
+        return super().form_valid(form)
 
     def get_object(self, queryset=None):
         """Get the current user as the view object"""
         return self.request.user.person
 
 
-class ChangeProfilePersoView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
+class PersonalInformationsView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
     template_name = "people/profile_default.html"
     form_class = InformationPersonalForm
-    success_url = reverse_lazy("profile_personal")
+    success_url = reverse_lazy("personal_informations")
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(tab_code=NAVS_PROFILE_IDENTITY, **kwargs)
@@ -188,7 +197,7 @@ class AddEmailMergeAccountView(SoftLoginRequiredMixin, NavsProfileMixin, FormVie
         return super().form_valid(form)
 
 
-class ConfirmMergeAccount(View):
+class ConfirmMergeAccountView(View):
     """
     Fusionne 2 compte.
 
@@ -257,7 +266,8 @@ class ConfirmMergeAccount(View):
         return HttpResponseRedirect(self.success_url)
 
 
-class SendConfirmationMergeAccount(HardLoginRequiredMixin, TemplateView):
+class SendConfirmationMergeAccountView(HardLoginRequiredMixin, TemplateView):
+    template_merge = "people/confirmation_change_mail_merge_account_sent.html"
     template_name = "people/confirmation_change_mail_merge_account_sent.html"
 
     def get(self, request):
@@ -267,14 +277,11 @@ class SendConfirmationMergeAccount(HardLoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
-            email=self.email,
-            is_merging=self.is_merging,
-            dict={"a": 1, "b": 2, "c": 3},
-            **kwargs,
+            email1=self.email, email2=self.email, is_merging=self.is_merging, **kwargs
         )
 
 
-class ChangePrimaryEmail(SoftLoginRequiredMixin, RedirectView):
+class ChangePrimaryEmailView(SoftLoginRequiredMixin, RedirectView):
     url = reverse_lazy("profile_contact")
 
     def get(self, request, *args, **kwargs):
@@ -285,10 +292,10 @@ class ChangePrimaryEmail(SoftLoginRequiredMixin, RedirectView):
         return super().get(request, *args, **kwargs)
 
 
-class ChangeProfileSkillsView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
+class SkillsView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
     template_name = "people/profile_default.html"
     form_class = ActivityAblebilityForm
-    success_url = reverse_lazy("profile_skills")
+    success_url = reverse_lazy("skills")
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(tab_code=NAVS_PROFILE_SKILLS, **kwargs)
@@ -298,10 +305,10 @@ class ChangeProfileSkillsView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateVi
         return self.request.user.person
 
 
-class ChangeProfilePrivacy(SoftLoginRequiredMixin, NavsProfileMixin, FormView):
+class PesonalDataView(SoftLoginRequiredMixin, NavsProfileMixin, FormView):
     template_name = "people/profile_default.html"
     form_class = InformationConfidentialityForm
-    success_url = reverse_lazy("profile_privacy")
+    success_url = reverse_lazy("personal_data")
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(tab_code=NAVS_PROFILE_CONFIDENTIALITY, **kwargs)
@@ -314,7 +321,7 @@ class ChangeProfilePrivacy(SoftLoginRequiredMixin, NavsProfileMixin, FormView):
 class VolunteerView(SoftLoginRequiredMixin, NavsProfileMixin, UpdateView):
     template_name = "people/volunteer.html"
     form_class = VolunteerForm
-    success_url = reverse_lazy("profile_involvement")
+    success_url = reverse_lazy("voluteer")
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(tab_code=NAVS_PROFILE_ACT)

@@ -36,29 +36,23 @@ urlpatterns = [
     ),
     path(
         "profil/identite/",
-        views.ChangeProfilePersoView.as_view(),
-        name="profile_personal",
+        views.PersonalInformationsView.as_view(),
+        name="personal_informations",
+    ),
+    path("profil/competences", views.SkillsView.as_view(), name="skills"),
+    path("profil/engagement/", views.VolunteerView.as_view(), name="voluteer"),
+    path(
+        "profil/preferences/",
+        views.ContactPreferencesView.as_view(),
+        name="contact_preferences",
     ),
     path(
-        "profil/competence",
-        views.ChangeProfileSkillsView.as_view(),
-        name="profile_skills",
+        "profil/participation/", views.ParticipationView.as_view(), name="participation"
     ),
     path(
-        "profil/engagement/", views.VolunteerView.as_view(), name="profile_involvement"
-    ),
-    path(
-        "profil/preference/",
-        views.ChangeProfilePreference.as_view(),
-        name="profile_preferences",
-    ),
-    path(
-        "profil/participation/",
-        views.ChangeProfileParticipation.as_view(),
-        name="profile_participation",
-    ),
-    path(
-        "profil/rejoindre/", views.ChangeProfileRejoin.as_view(), name="profile_rejoin"
+        "profil/rejoindre/",
+        views.BecomeInsoumiseView.as_view(),
+        name="become_insoumise",
     ),
     path(
         "profil/contact/",
@@ -72,17 +66,17 @@ urlpatterns = [
     ),
     path(
         "profil/contact/adresses/confirmer",
-        views.ConfirmMergeAccount.as_view(),
+        views.ConfirmMergeAccountView.as_view(),
         name="confirm_merge_account",
     ),
     path(
         "profil/contact/adresses/<int:pk>/principale/",
-        views.ChangePrimaryEmail.as_view(),
-        name="change_mail",
+        views.ChangePrimaryEmailView.as_view(),
+        name="change_primary_mail",
     ),
     path(
         "profil/contact/adresses/fusion_attente/",
-        views.SendConfirmationMergeAccount.as_view(),
+        views.SendConfirmationMergeAccountView.as_view(),
         name="confirm_merge_account_sent",
     ),
     path(
@@ -92,13 +86,11 @@ urlpatterns = [
     ),
     path(
         "profil/adresses/confirmer",
-        views.ConfirmChangeMail.as_view(),
+        views.ConfirmChangeMailView.as_view(),
         name="confirm_change_mail",
     ),
     path(
-        "profil/confidentialite/",
-        views.ChangeProfilePrivacy.as_view(),
-        name="profile_privacy",
+        "profil/confidentialite/", views.PesonalDataView.as_view(), name="personal_data"
     ),
     path("agir/", views.VolunteerView.as_view(), name="volunteer"),
     path(

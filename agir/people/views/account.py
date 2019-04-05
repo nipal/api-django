@@ -22,7 +22,7 @@ from agir.people.models import Person
 from agir.people.views.mixins import NavsProfileMixin, NAVS_PROFILE_CONTACT
 
 
-class ConfirmChangeMail(View):
+class ConfirmChangeMailView(View):
     """
     Confirme et enregistre une nouvelle adresse email.
 
