@@ -80,7 +80,7 @@ class BecomeInsoumiseView(SoftLoginRequiredMixin, UpdateView):
         return self.request.user.person
 
 
-class PersonalInformationsView(InsoumiseOnlyMixin, SoftLoginRequiredMixin, UpdateView):
+class PersonalInformationsView(SoftLoginRequiredMixin, InsoumiseOnlyMixin, UpdateView):
     template_name = "people/profile_default.html"
     form_class = PersonalInformationsForm
     success_url = reverse_lazy("personal_information")
@@ -144,7 +144,7 @@ class AddEmailMergeAccountView(SoftLoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class ConfirmMergeAccountView(View):
+class ConfirmMergeAccountView(SoftLoginRequiredMixin, View):
     """
     Fusionne 2 compte.
 
