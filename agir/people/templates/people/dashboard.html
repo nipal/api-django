@@ -95,6 +95,12 @@
             <h3>Événements suggérés</h3>
             <div class="list-group">
                 {% for event in suggested_events %}
+
+                    {% if event.start_time.day == 17 %}
+                        --------
+                    {% endif %}
+
+
                     <div class="list-group-item">
                         <div class="media">
                             <div class="media-left media-middle"  style="min-width:64px">

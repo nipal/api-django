@@ -122,4 +122,6 @@ class DashboardView(SoftLoginRequiredMixin, TemplateView):
             }
         )
 
+        debug = "delete-me"
+
         return super().get_context_data(**kwargs)
