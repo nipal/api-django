@@ -77,6 +77,7 @@ class CreateEventForm extends React.Component {
         name: "Validation et nom",
         component: (
           <ValidateStep
+            setFields={this.setFields}
             fields={this.state.fields}
             subtypes={this.props.subtypes}
           />
@@ -378,6 +379,7 @@ class ValidateStep extends FormStep {
       location_country: fields.locationCountryCode,
       subtype: fields.subtype,
       as_group: fields.organizerGroup,
+      dont_reference: fields.dontReference,
       legal: JSON.stringify(fields.legal)
     });
 
@@ -456,6 +458,25 @@ class ValidateStep extends FormStep {
                 placeholder="Nom de l'événement"
                 required
               />
+              <input
+                checked={fields.dontReference || false}
+                onChange={this.handleInputChange}
+                type="checkbox"
+                id="dontReference"
+                name="dontReference"
+                data-toggle="tooltip"
+                title="En cochant cette case, votre événement n'apparaîtra pas sur la carte des événements
+                ainsi que dans les moteurs de recherches. Toutefois, en partageant directement le lien de l'événement,
+                il est possible d'y accéder."
+              />
+              <span
+                data-toggle="tooltip"
+                title="En cochant cette case, votre événement n'apparaîtra pas sur la carte des événements
+                ainsi que dans les moteurs de recherches. Toutefois, en partageant directement le lien de l'événement,
+                il est possible d'y accéder."
+              >
+                Ne pas référencer l'événement.
+              </span>
             </div>
             <button
               className="btn btn-primary"

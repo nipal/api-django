@@ -154,6 +154,7 @@ class EventForm(LocationFormMixin, ContactFormMixin, ImageFormMixin, forms.Model
             Row(HalfCol("start_time"), HalfCol("end_time")),
             Row(HalfCol("as_group")),
             Section("Inscriptions", Row(FullCol("allow_guests"))),
+            Section("Référencement", "dont_reference"),
             Section(
                 _("Informations de contact"),
                 Row(FullCol("contact_name")),
@@ -293,6 +294,7 @@ class EventForm(LocationFormMixin, ContactFormMixin, ImageFormMixin, forms.Model
             "description",
             "subtype",
             "legal",
+            "dont_reference",
         )
 
 
